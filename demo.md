@@ -267,7 +267,43 @@ refresh()
 - start
 - move
 - end
+[slide]
+```javascript
+  BScroll.prototype.scrollTo = function (x, y, time = 0, easing = ease.bounce) {
+    // 设置isInTransition
+    this.isInTransition = this.options.useTransition && time > 0 && (x !== this.x || y !== this.y)
 
+    // 配置是否使用css3动画transitiond的标记 如果设置中使用transiation并且过渡时间为0
+    if (!time || this.options.useTransition) {
+      // 设置需要进行css transition的css样式
+      this._transitionProperty()
+      // 过渡的计算方法,比如linear，ease，cubic-bezier(0.1, 0.7, 1.0, 0.1),steps(4, end)等等 各种贝塞尔曲线等
+      this._transitionTimingFunction(easing.style)
+      // 修改当前滚动对象的动画运行时间
+      this._transitionTime(time)
+      // 设置transform：translate，这是better-scroll实现滑动的原理
+      // 通过子元素不断改变transform:translate，来达到浏览器滚动的效果
+      this._translate(x, y)
+
+      // 如果probetype设置为3 则使用requestAnimateFrame在浏览器每次刷新时触发scroll事件，然后在回调中判断过渡状态是否结束
+      if (time && this.options.probeType === 3) {
+        this._startProbe()
+      }
+
+      if (this.options.wheel) {
+        if (y > 0) {
+          this.selectedIndex = 0
+        } else if (y < this.maxScrollY) {
+          this.selectedIndex = this.items.length - 1
+        } else {
+          this.selectedIndex = Math.round(Math.abs(y / this.itemHeight))
+        }
+      }
+    } else {
+      this._animate(x, y, time, easing.fn)
+    }
+  }
+```
 [slide]
 
 scrollTo中的核心方法_translate
