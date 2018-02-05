@@ -156,7 +156,7 @@ BScroll.prototype._init = function(el, options) {
     6.**refresh方法,当滚动组件内部dom变化的时候,重新计算滚动容器的高宽,滚动条的位置,并将滚动元素重置**
     6.初始化滚动元素的位置
 
-重点讲解的部分  就是 3/5/6 三块
+重点讲解的部分  就是高亮的三块
 
 better-scroll 是一个滚动插件，所以必定要监听原生的事件。通常而言，我们写一个事件的监听函数，一般会像如下的方式编写
 
@@ -266,7 +266,7 @@ BScroll.prototype.refresh = function() {
 以上就完成了初始化部分的分析.接下来就是滚动的核心部分,讲解手指在屏幕上 touch start/touch move/touch end 三个时间点 better-scroll 都做了什么事情.
 better-scroll 为了实现较好的用户体验,在用户滑动屏幕后加入了惯性滚动部分,所以滑动和滚动在 Better-scroll 中指的是两个不同的部分.
 
-core 文件中,最核心的部分就是 scrollTo()方法,他是模拟滚动的直接实现,在这个函数的内部主要有两个操作\_translate(x,y)和\_startProbe().其他操作是设置过度动画时间/设置过渡动画加速度曲线/兼容浏览器设置 transition 前缀等
+core 文件中,最核心的部分就是 scrollTo()方法,他是模拟滚动的直接实现,在这个函数的内部主要有两个操作_translate(x,y)和_startProbe().其他操作是设置过度动画时间/设置过渡动画加速度曲线/兼容浏览器设置 transition 前缀等
 
 ```javascript
 BScroll.prototype.scrollTo = function(x, y, time = 0, easing = ease.bounce) {
@@ -291,21 +291,20 @@ BScroll.prototype.scrollTo = function(x, y, time = 0, easing = ease.bounce) {
         // wheel用于picker组件设置,不关心
         if (this.options.wheel) {
             if (y > 0) {
-                this.selectedIndex = 0
+            this.selectedIndex = 0
             } else if (y < this.maxScrollY) {
-                this.selectedIndex = this.items.length - 1
+            this.selectedIndex = this.items.length - 1
             } else {
-                this.selectedIndex = Math.round(Math.abs(y / this.itemHeight))
+            this.selectedIndex = Math.round(Math.abs(y / this.itemHeight))
             }
-        } else {
-            //如果不支持使用transition会使用requestAnimationFrame来实现滚动动画，暂时不关心，只关心使用transition的情况
-            this._animate(x, y, time, easing.fn)
         }
+    } else {
+      this._animate(x, y, time, easing.fn)
     }
 }
 ```
 
-在\_translate()方法中主要做了两件事：设置 tranform，实现元素位置变化；记录滚动位置。如果只有\_translate()方法会实现页面位置变化，但不会有过渡动画。
+在_translate()方法中主要做了两件事：设置 tranform，实现元素位置变化,这样给人的视觉就和浏览器的滚动一样；记录滚动位置。如果只有_translate()方法会实现页面位置变化，但不会有过渡动画。
 
 ```javascript
 BScroll.prototype._translate = function(x, y) {
@@ -342,7 +341,7 @@ BScroll.prototype._translate = function(x, y) {
 }
 ```
 
-在\_startProbe()方法中,主要是通过 requestAnimationFrame 请求浏览器在每次刷新时执行回调 probe()派发"scroll"事件，同时在回调中判断，如果过渡状态结束，不再请求执行回调。这里还调用了 getComputedPosition()方法，主要是用于获取此时的滚动位置
+在_startProbe()方法中,主要是通过 requestAnimationFrame 请求浏览器在每次刷新时执行回调 probe()派发"scroll"事件，同时在回调中判断，如果过渡状态结束，不再请求执行回调。这里还调用了 getComputedPosition()方法，主要是用于获取此时的滚动位置
 
 ```javascript
 BScroll.prototype._startProbe = function() {
@@ -562,22 +561,21 @@ BScroll.prototype.stop = function() {
 }
 ```
 
-如果没有处于惯性滚动过程中，这个方法什么都不会做（我们只考虑使用 transition 的情况）。如果处于惯性滚动过程中，会获取元素当前位置，重新调用_translate()设置最终滚动位置为当前位置。为什么说是重新调用？因为由于过渡动画的存在，上一次的滚动还没有结束，即还没有滚动要目标位置，我们现在又重新设置目标位置为当前位置。同时调用 stop()前调用了\_transitionTime()设置过渡时间为 0，所以过渡动画会马上结束。最终的效果就是，当我们手指接触屏幕的时候，原来的惯性滚动马上停止。
+如果没有处于惯性滚动过程中，这个方法什么都不会做（我们只考虑使用 transition 的情况）。如果处于惯性滚动过程中，会获取元素当前位置，重新调用_translate()设置最终滚动位置为当前位置。为什么说是重新调用？因为由于过渡动画的存在，上一次的滚动还没有结束，即还没有滚动要目标位置，我们现在又重新设置目标位置为当前位置。同时调用 stop()前调用了_transitionTime()设置过渡时间为 0，所以过渡动画会马上结束。最终的效果就是，当我们手指接触屏幕的时候，原来的惯性滚动马上停止。
 总结而言
 - 判断 PC 端只允许左键点击
 - 判断是否可操作、是否未销毁,没有就直接跳出函数
-- 判断是否可操作、是否未销毁
 - 设置 transition 运动时间，不传参数默认为0
 - 若上一次滚动还在继续时，此时触发了_start，则停止到当前滚动位置
 - BS还提供了beforeScrollStart事件,方便和外面做交互
 
 在_move()中,bs 做了如下一些事情
 
-* 计算鼠标或者手指的滑动距离
-* 根据横向纵向滑动距离锁定一个滚动方向（前提 freeScroll === false)
-* 根据滑动距离计算滚动距离，并执行滚动
-* 派发"scroll"事件
-* 判断手指滑动到视窗(visual viewport)边缘，执行\_end()
+- 计算鼠标或者手指的滑动距离
+- 根据横向纵向滑动距离锁定一个滚动方向（前提 freeScroll === false)
+- 根据滑动距离计算滚动距离，并执行滚动
+- 派发"scroll"事件
+- 判断手指滑动到视窗(visual viewport)边缘，执行\_end()
 
 ```javascript
 BScroll.prototype._move = function (e) {
@@ -920,7 +918,7 @@ BScroll.prototype._end = function(e) {
 }
 ```
 
-可以看到在滑动结束的时候，better-scroll 会判断是否需要惯性滚动，计算要滚动到哪里。至于怎么计算的，可以查看 src/scroll/momentum.js 文件。
+可以看到在滑动结束的时候，better-scroll 会判断是否需要惯性滚动/滑动，计算要滑动到哪里。至于怎么计算的，可以查看 src/scroll/momentum.js 文件。
 
 而在滚动结束后,bs 也有监听 transitionend
 
@@ -940,3 +938,40 @@ BScroll.prototype._end = function(e) {
     }
   }
 ```
+最后的方法中会判断resetPosition
+
+```javascript
+  BScroll.prototype.resetPosition = function () {
+    var time = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var easeing = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ease.bounce;
+
+    var x = this.x;
+    var roundX = Math.round(x);
+    if (!this.hasHorizontalScroll || roundX > 0) {
+      x = 0;
+    } else if (roundX < this.maxScrollX) {
+      x = this.maxScrollX;
+    }
+
+    var y = this.y;
+    var roundY = Math.round(y);
+    if (!this.hasVerticalScroll || roundY > 0) {
+      y = 0;
+    } else if (roundY < this.maxScrollY) {
+      y = this.maxScrollY;
+    }
+
+    if (x === this.x && y === this.y) {
+      return false;
+    }
+
+    this.scrollTo(x, y, time, easeing);
+
+    return true;
+  };
+```
+可以看到resetPosition()方法只做了一件事情，调用scrollTo()方法重置滚动元素位置。什么情况下需要重置滚动元素位置呢？先说一下我们在滚动过程中一个合理的滚动距离dis，应该满足maxScrollX/Y <= dis <= 0。所以滚动的距离如果超出了边界值：
+
+dis>0，向下或者向右滚动超过边界值，会重置为0。
+dis<maxScrollX/Y，向上或者向左滚动超出边界值，会重置为maxScrollX/Y。
+如果滚动距离没有超过边界值，那么resetPosition不会做任何事情，保持原来的位置。

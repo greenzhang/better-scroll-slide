@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        #container {
+            min-height: 60px;
+        }
+
+        #target {
+            padding: 5px;
+            border: 1px solid green;
+        }
+    </style>
+    <div id="container">
+        <span id="target">这是目标 span</span>
+    </div>
+    <button type="button" id="remove">删除</button>
+    <button type="button" id="recover">恢复</button>
+    <script>
+        const container = document.querySelector("#container");
+        const target = document.querySelector("#target");
+        target.addEventListener("click", () => {
+            console.log("the span is clicked");
+        });
+
+        document.querySelector("#remove").addEventListener("click", () => {
+            alert("removed");
+            target.remove();
+        });
+
+        document.querySelector("#recover").addEventListener("click", () => {
+            alert("recovered");
+            container.appendChild(target);
+        });
+    </script>
+</body>
+
+</html>
