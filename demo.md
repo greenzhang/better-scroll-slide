@@ -13,7 +13,7 @@ files: /js/demo.js,/css/demo.css
 # 背景 {:&.flexbox.vleft}
 ## 移动端滚动条的痛点
 
-[slide style="background-image:url('/img/bg1.png')"]
+[slide]
 ## 元标签
 ----
 ```javascript
@@ -48,8 +48,13 @@ user-scalable：用户是否可以手动缩放
 
 [slide]
 
-**需要解决方案！**
+![low pack android](../imgs/low_pack_android_performance.png 'qrcode')
 
+[slide]
+
+**需要解决方案！**
+[slide]
+Better-scroll
 [slide]
 ![better scroll](../imgs/better-scroll.png 'better scroll')
 
@@ -553,3 +558,7 @@ end函数
 ```
 - dis>0，向下或者向右滚动超过边界值，会重置为0。
 - dis<maxScrollX/Y，向上或者向左滚动超出边界值，会重置为maxScrollX/Y。
+[slide]
+缺点:
+- 低端安卓机上,性能不佳
+- 业务需求中有大量DOM节点的时候
